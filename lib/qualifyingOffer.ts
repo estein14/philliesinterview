@@ -1,7 +1,5 @@
 import * as cheerio from "cheerio";
 
-const DATA_URL = "https://questionnaire-148920.appspot.com/swe/data.html";
-
 export type PlayerSalary = {
 	name: string;
 	salary: number;
@@ -20,7 +18,15 @@ export type QualifyingOfferResult = {
  * Parsing is done with cheerio package
  */
 export async function fetchQualifyingOffer(): Promise<QualifyingOfferResult> {
-	const response = await fetch(DATA_URL, { cache: "no-store" });
+	const dataUrl = process.env.MLB_SALARIES_URL;
+
+	if (!dataUrl) {
+		throw new Error(
+			"MLB_SALARIES_URL environment variable is not set. Please add it to your .env.local file."
+		);
+	}
+
+	const response = await fetch(dataUrl, { cache: "no-store" });
 
 	if (!response.ok) {
 		throw new Error(`Failed to fetch data (status ${response.status})`);
